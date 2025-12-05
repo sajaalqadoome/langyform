@@ -13,7 +13,7 @@
             --clr-secondary: #6c757d;
             --clr-background: #f8f9fa; /* Clean background */
             --clr-sidebar: #5D956B; /* Dark sidebar */
-            --clr-success: #28a745;
+            --clr-success: #5D956B;
             --clr-info: #17a2b8;
         }
 
@@ -52,7 +52,7 @@
         }
 
         .sidebar .nav-item .nav-link {
-            padding: 0.75rem 1rem;
+            padding: 1rem 1rem;
             color: rgba(255, 255, 255, 0.8);
             display: flex;
             align-items: center;
@@ -92,6 +92,7 @@
             box-shadow: 0 0.5rem 1rem #5D956B(0, 0, 0, 0.1);
             overflow: hidden;
             text-align: center;
+            border:5px solid #5D956B;
         }
         .language-card:hover {
             transform: translateY(-5px);
@@ -121,7 +122,7 @@
 
     <ul class="navbar-nav sidebar">
         <a class="sidebar-brand" href="#">
-            <i class="fas fa-graduation-cap"></i> <span class="d-inline">LandyForm</span>
+            <i class="fas fa-graduation-cap"></i> <span class="d-inline">LangyForm</span>
         </a>
         
         <li class="nav-item active">
@@ -159,70 +160,57 @@
     </ul>
     <div id="content-wrapper">
 
-        <nav class="navbar navbar-expand topbar mb-4 bg-white rounded shadow-sm">
-            <div class="container-fluid">
-                <h2 class="h5 mb-0 fw-bold">Select a Language to Create Quizzes</h2>
-                
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-secondary" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                             <span class="d-none d-lg-inline small me-2">Notifications</span>
-                             <i class="fas fa-bell"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-secondary" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img class="img-profile rounded-circle" src="https://via.placeholder.com/40" alt="User Avatar" style="width: 2rem; height: 2rem; margin-right: 0.5rem;">
-                            <span class="d-none d-lg-inline small">My Account</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+     
         <div id="content">
 
             <div class="container-fluid">
 
                 <div class="alert alert-info py-3 mb-5" role="alert">
-                    <h4 class="alert-heading"><i class="fas fa-bullhorn me-2"></i> Welcome to the Quiz Creation Portal!</h4>
-                    <p class="mb-0">Please select the language you wish to create or review quizzes for from the cards below.</p>
+                    <h4 class="alert-heading"><i class="fas fa-bullhorn me-2"></i> Comprehensive Assessment</h4>
                 </div>
 
                 <div class="row justify-content-center">
+<!--english-->
+<div class="col-lg-4 col-md-6 mb-4">
+    <a href="quiz_page.html?lang=english&quiz_id=1" class="text-decoration-none">
+        
+        <div class="card language-card card-english">
+            <div class="card-body">
+                <i class="fas fa-language fa-3x mb-3" style="color: #dc3545;"></i>
+                <h4 class="card-title">English Language</h4>
+                <p class="card-text text-secondary mb-3">Click to access quizzes</p>
+                <span class="badge bg-secondary">3 Quizzes Created</span>
+            </div>
+        </div>
+        
+    </a> 
+</div>
+<!--english-->
+<!--French-->
 
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <a href="english_dashboard.html" class="text-decoration-none">
-                            <div class="card language-card card-english">
-                                <div class="card-body">
-                                    <i class="fas fa-language fa-3x mb-3" style="color: #dc3545;"></i>
-                                    <h4 class="card-title">English Language</h4>
-                                    <p class="card-text text-secondary mb-3">Click to access quizzes for Grammar, Vocabulary, and Reading.</p>
-                                    <span class="badge bg-secondary">12 Quizzes Created</span>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <a href="french_dashboard.html" class="text-decoration-none">
-                            <div class="card language-card card-french">
-                                <div class="card-body">
-                                    <i class="fas fa-flag fa-3x mb-3" style="color: #007bff;"></i>
-                                    <h4 class="card-title">French Language</h4>
-                                    <p class="card-text text-secondary mb-3">Start creating quizzes for comprehension and linguistic structures.</p>
-                                    <span class="badge bg-secondary">6 Quizzes Created</span>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
+<div class="col-lg-4 col-md-6 mb-4">
+    <a href="french_quiz_page.html?lang=french&quiz_id=2" class="text-decoration-none">
+        
+        <div class="card language-card card-french">
+            <div class="card-body">
+                <i class="fas fa-flag fa-3x mb-3" style="color: #007bff;"></i>
+                <h4 class="card-title">French Language</h4>
+                <p class="card-text text-secondary mb-3">Click to access quizzes</p>
+                <span class="badge bg-secondary">6 Quizzes Created</span>
+            </div>
+        </div>
+        
+    </a> 
+</div>
                     
+<!--French-->
                     <div class="col-lg-4 col-md-6 mb-4">
                         <a href="spanish_dashboard.html" class="text-decoration-none">
                             <div class="card language-card card-spanish">
                                 <div class="card-body">
                                     <i class="fas fa-globe-americas fa-3x mb-3" style="color: #ffc107;"></i>
                                     <h4 class="card-title">Spanish Language</h4>
-                                    <p class="card-text text-secondary mb-3">¡Hola! Add your new tests for the Spanish language.</p>
+                                    <p class="card-text text-secondary mb-3">Click to access quizzes</p>
                                     <span class="badge bg-secondary">0 Quizzes Created</span>
                                 </div>
                             </div>
@@ -238,7 +226,7 @@
                 <div class="card-body">
  <i class="fas fa-pen-nib fa-3x mb-3" style="color: #00a86b;"></i>
                     <h4 class="card-title" style="color: #00a86b;"> Arabic language</h4>
-                    <p class="card-text text-secondary mb-3">Start by creating and reviewing grammar, morphology, and reading models.</p>
+                    <p class="card-text text-secondary mb-3">Click to access quizzes</p>
                     <span class="badge bg-secondary"> 10 Quizzes Created</span>
                 </div>
             </div>
@@ -253,7 +241,7 @@
             <div class="card-body">
                 <i class="fas fa-moon fa-3x mb-3" style="color: #e74c3c;"></i>
                 <h4 class="card-title" style="color: #dc3545;">Turkish Language</h4>
-                <p class="card-text text-secondary mb-3">Click to access Turkish form builders grammar, morphology, and reading models</p>
+                <p class="card-text text-secondary mb-3">Click to access quizzes</p>
                 <span class="badge bg-secondary">3 Quizzes Created</span>
             </div>
         </div>
@@ -268,7 +256,7 @@
             <div class="card-body">
                 <i class="fas fa-cogs fa-3x mb-3" style="color: #DAA520;"></i> 
                 <h4 class="card-title" style="color: #DAA520;">Chinese language</h4> 
-                <p class="card-text text-secondary mb-3">Prepare your models for Mandarin and various Hanzi characters.</p>
+                <p class="card-text text-secondary mb-3">Click to access quizzes</p>
                 <span class="badge bg-secondary">0 Quizzes Created</span>
             </div>
         </div>
@@ -283,5 +271,7 @@
         </div>
     </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
 </body>
 </html>
