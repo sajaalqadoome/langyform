@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr" dir="ltr">
 <head>
@@ -23,7 +24,6 @@
             text-align: left;
         }
         
-        /* Quiz Layout (Content only, no sidebar) */
         .quiz-container {
             padding: 3rem 1rem;
             max-width: 1200px;
@@ -46,7 +46,6 @@
             border-bottom: 1px solid var(--clr-quiz-border);
         }
 
-        /* Answer Options Style */
         .answer-option {
             background-color: #fff;
             border: 2px solid var(--clr-quiz-border);
@@ -64,10 +63,9 @@
 
         .answer-option input[type="radio"] {
             margin-right: 15px;
-            transform: scale(1.2);
+            transform: scale(1.2); 
         }
         
-        /* Question Navigation Sidebar */
         .question-nav-sidebar {
             background-color: #fff;
             padding: 1.5rem;
@@ -86,7 +84,6 @@
             border: 1px solid var(--clr-quiz-border);
         }
 
-        /* Visual states for question navigation */
         .btn-question-unanswered {
             background-color: #f1f1f1;
             color: var(--clr-secondary);
@@ -119,30 +116,10 @@
                 <h2 class="mb-4 text-primary" style="color: var(--clr-primary) !important;">Question <span id="current-q-number">1</span> sur 10</h2>
                 
                 <div class="question-text" id="question-text">
-                    Quelle est la conjugaison correcte du verbe 'être' à la première personne du singulier au présent ?
-                </div>
+                    </div>
 
                 <form id="quiz-form">
-                    <label class="answer-option d-flex align-items-center">
-                        <input type="radio" name="answer" value="a" class="form-check-input">
-                        <span>A) **Je suis**</span>
-                    </label>
-
-                    <label class="answer-option d-flex align-items-center">
-                        <input type="radio" name="answer" value="b" class="form-check-input">
-                        <span>B) **J'ai**</span>
-                    </label>
-
-                    <label class="answer-option d-flex align-items-center">
-                        <input type="radio" name="answer" value="c" class="form-check-input">
-                        <span>C) **Tu es**</span>
-                    </label>
-
-                    <label class="answer-option d-flex align-items-center">
-                        <input type="radio" name="answer" value="d" class="form-check-input">
-                        <span>D) **Il est**</span>
-                    </label>
-                </form>
+                    </form>
                 
                 <hr class="my-4">
 
@@ -162,25 +139,15 @@
                 <h5 class="fw-bold mb-3"><i class="fas fa-list-ol me-2"></i> Progression</h5>
                 
                 <div class="bg-light p-2 rounded mb-4">
-                    <p class="mb-0 fw-bold text-danger"><i class="fas fa-clock me-2"></i> Temps Restant: <span id="quiz-timer">19:50</span></p>
+                    <p class="mb-0 fw-bold text-danger"><i class="fas fa-clock me-2"></i> Temps Restant: <span id="quiz-timer">20:00</span></p>
                 </div>
 
-                <div class="d-flex flex-wrap justify-content-center">
-                    <button class="btn btn-question-current">1</button> 
-                    <button class="btn btn-question-unanswered">2</button>
-                    <button class="btn btn-question-unanswered">3</button>
-                    <button class="btn btn-question-unanswered">4</button>
-                    <button class="btn btn-question-unanswered">5</button>
-                    <button class="btn btn-question-unanswered">6</button>
-                    <button class="btn btn-question-unanswered">7</button>
-                    <button class="btn btn-question-unanswered">8</button>
-                    <button class="btn btn-question-unanswered">9</button>
-                    <button id="finish-btn" class="btn btn-question-unanswered">10</button>
-                </div>
+                <div class="d-flex flex-wrap justify-content-center" id="nav-buttons-container">
+                    </div>
                 
                 <hr class="my-3">
                 
-                <button class="btn btn-danger w-100 mt-2 py-2">
+                <button class="btn btn-danger w-100 mt-2 py-2" id="finish-sidebar-btn">
                     <i class="fas fa-check-circle me-2"></i> Terminer le Quiz
                 </button>
             </div>
@@ -189,7 +156,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
 // =======================================================
 // 1. تعريف مصفوفة الأسئلة (لغة فرنسية)
@@ -248,50 +214,54 @@ const quizData = [
 ];
 
 let currentQuestionIndex = 0; 
+let userAnswers = new Array(quizData.length).fill(null); // مصفوفة لتخزين الإجابات
+let quizStartTime = new Date(); // وقت بدء الاختبار
 
 // =======================================================
-// 2. العناصر الرئيسية في الواجهة (تمت ترجمة النصوص المرئية فقط)
+// 2. العناصر الرئيسية في الواجهة
 // =======================================================
 const questionTextElement = document.getElementById('question-text');
 const currentQNumberElement = document.getElementById('current-q-number');
 const quizForm = document.getElementById('quiz-form');
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
-const navButtonsContainer = document.querySelector('.d-flex.flex-wrap');
+const navButtonsContainer = document.getElementById('nav-buttons-container');
+const finishSidebarBtn = document.getElementById('finish-sidebar-btn');
+
 
 // =======================================================
-// 3. وظيفة لعرض السؤال الحالي
+// 3. وظيفة حفظ الإجابة الحالية
+// =======================================================
+function saveCurrentAnswer() {
+    const selectedOption = quizForm.querySelector('input[name="answer"]:checked');
+    userAnswers[currentQuestionIndex] = selectedOption ? selectedOption.value : null;
+}
+
+// =======================================================
+// 4. وظيفة لعرض السؤال الحالي
 // =======================================================
 function loadQuestion() {
     const qData = quizData[currentQuestionIndex];
     
-    // 1. تحديث رقم السؤال
     currentQNumberElement.textContent = currentQuestionIndex + 1;
-    
-    // 2. تحديث نص السؤال
     questionTextElement.textContent = qData.question;
     
-    // 3. تحديث الخيارات
     quizForm.innerHTML = ''; 
+    const savedAnswer = userAnswers[currentQuestionIndex]; 
+
     qData.options.forEach((option, index) => {
+        const isChecked = option === savedAnswer ? 'checked' : '';
         const optionHtml = `
             <label class="answer-option d-flex align-items-center">
-                <input type="radio" name="answer" value="${option}" class="form-check-input">
+                <input type="radio" name="answer" value="${option}" class="form-check-input" ${isChecked}>
                 <span>${String.fromCharCode(65 + index)}) **${option}**</span>
             </label>
         `;
         quizForm.innerHTML += optionHtml;
     });
 
-    // 4. تحديث حالة أزرار التنقل (Previous/Next)
     prevBtn.disabled = currentQuestionIndex === 0;
     
-    // تحديث نص زر Previous
-    prevBtn.innerHTML = '<i class="fas fa-chevron-left me-2"></i> Précédent';
-
-    nextBtn.disabled = currentQuestionIndex === quizData.length - 1;
-
-    // تغيير نص زر Next إلى 'Finish' إذا كان السؤال الأخير
     if (currentQuestionIndex === quizData.length - 1) {
         nextBtn.textContent = 'Terminer le Quiz';
         nextBtn.classList.remove('btn-primary');
@@ -302,68 +272,109 @@ function loadQuestion() {
         nextBtn.classList.add('btn-primary');
     }
 
-    // 5. تحديث أزرار التنقل الجانبية
     updateNavButtons();
 }
 
 // =======================================================
-// 4. وظيفة لتحديث حالة الأزرار الجانبية
+// 5. وظيفة لتحديث حالة الأزرار الجانبية
 // =======================================================
 function updateNavButtons() {
-    // هذه الدالة تعتمد على أن الأزرار تم تعريفها مسبقاً في HTML
+    // إنشاء الأزرار إذا لم تكن موجودة بعد
+    if (navButtonsContainer.children.length === 0) {
+        for (let i = 0; i < quizData.length; i++) {
+            const button = document.createElement('button');
+            button.classList.add('btn');
+            button.textContent = i + 1;
+            button.addEventListener('click', () => {
+                saveCurrentAnswer();
+                currentQuestionIndex = i;
+                loadQuestion();
+            });
+            navButtonsContainer.appendChild(button);
+        }
+    }
+
     const navButtons = navButtonsContainer.querySelectorAll('.btn');
     navButtons.forEach((button, index) => {
-        button.classList.remove('btn-question-current');
-        button.classList.remove('btn-question-unanswered');
-        button.classList.remove('btn-question-answered');
+        button.classList.remove('btn-question-current', 'btn-question-unanswered', 'btn-question-answered');
         
         if (index === currentQuestionIndex) {
             button.classList.add('btn-question-current');
+        } else if (userAnswers[index] !== null) {
+            button.classList.add('btn-question-answered');
         } else {
-            // مؤقتاً، نعتبرها غير مجاب عليها
             button.classList.add('btn-question-unanswered');
         }
     });
 }
 
 // =======================================================
-// 5. وظيفة التنقل
+// 6. وظيفة إنهاء الاختبار وحساب النتيجة والتوجيه (وظيفة رئيسية)
+// =======================================================
+function finishQuizAndShowResult() {
+    saveCurrentAnswer(); // تأكد من حفظ إجابة السؤال الأخير
+
+    const quizEndTime = new Date();
+    const timeTakenMs = quizEndTime - quizStartTime;
+    
+    // تحويل الوقت المستغرق إلى تنسيق (دقائق: ثواني)
+    const minutes = Math.floor(timeTakenMs / 60000);
+    const seconds = Math.floor((timeTakenMs % 60000) / 1000);
+    const timeTakenString = `${minutes}:${seconds < 10 ? '0' : ''}${seconds} minutes`;
+    
+    // حساب النتيجة
+    let score = 0;
+    quizData.forEach((q, index) => {
+        if (q.correct === userAnswers[index]) {
+            score++; 
+        }
+    });
+
+    // تخزين البيانات في Local Storage
+    localStorage.setItem('finalScore', score);
+    localStorage.setItem('totalQuestions', quizData.length);
+    // تحديث اسم المادة للاختبار الفرنسي
+    localStorage.setItem('quizSubject', 'French Grammar - Intermédiaire');
+    localStorage.setItem('timeTaken', timeTakenString); 
+    
+    // ********************************************
+    // التوجيه إلى صفحة النتائج بالاسم الجديد: final_score.html
+    // ********************************************
+    window.location.href = 'final_score.html';
+}
+
+
+// =======================================================
+// 7. ربط أزرار التنقل والإنهاء
 // =======================================================
 prevBtn.addEventListener('click', () => {
+    saveCurrentAnswer(); 
     if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
         loadQuestion();
     }
 });
 
+
 nextBtn.addEventListener('click', () => {
+    saveCurrentAnswer(); 
+    
     if (currentQuestionIndex < quizData.length - 1) {
         currentQuestionIndex++;
         loadQuestion();
     } else {
-        // إذا كان الزر هو 'Terminer le Quiz'
-        alert('Quiz terminé ! (Nous vous redirigerons vers les résultats)');
-        // window.location.href = 'result_page.html';
+        // عند الضغط على زر Next (الذي أصبح Terminer le Quiz)
+        finishQuizAndShowResult();
     }
 });
 
-// ربط أزرار التنقل الجانبية
-navButtonsContainer.addEventListener('click', (event) => {
-    if (event.target.classList.contains('btn-question-unanswered') || event.target.classList.contains('btn-question-current')) {
-        const questionNumber = parseInt(event.target.textContent);
-        if (!isNaN(questionNumber)) {
-            currentQuestionIndex = questionNumber - 1;
-            loadQuestion();
-        }
-    }
-});
-
+// ربط زر 'Terminer le Quiz' الجانبي
+finishSidebarBtn.addEventListener('click', finishQuizAndShowResult);
 
 // =======================================================
-// 6. تشغيل الاختبار عند تحميل الصفحة
+// 8. تشغيل الاختبار عند تحميل الصفحة
 // =======================================================
 loadQuestion();
 </script>
-
 </body>
 </html>

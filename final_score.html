@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Quiz Score - LandyForm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --clr-primary: #198754; /* Success Green */
+            --clr-secondary: #6c757d;
+            --clr-background: #f8f9fa; 
+        }
+
+        body {
+            background-color: var(--clr-background); 
+            font-family: 'Roboto', sans-serif; /* Changed font for English */
+            direction: ltr; /* Changed direction to Left-to-Right */
+            text-align: left; /* Changed alignment to Left */
+            padding-top: 50px;
+        }
+        
+        .result-container {
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .result-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 1rem 3rem rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+
+        /* Icon styles (Pass/Fail) */
+        .result-icon-success {
+            color: var(--clr-primary);
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .result-icon-fail {
+            color: #dc3545; /* Danger Red */
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        .score-display {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--clr-primary);
+        }
+        
+        .details-table th, .details-table td {
+            text-align: left !important; /* Changed table alignment to left */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container result-container">
+    <div class="card result-card text-center">
+        
+        <i class="fas fa-sync fa-spin result-icon-success" id="result-icon"></i> 
+        
+        <h1 class="fw-bold mb-3" id="result-title">Loading Results...</h1>
+        
+        <p class="text-muted lead" id="result-message">Please wait while your performance is being processed.</p>
+
+        <hr>
+        
+        <div class="p-3 mb-4 rounded-3 border bg-light" id="score-box">
+            <p class="mb-2 text-dark">Your Final Score is:</p>
+            <div class="score-display" id="final-score">-- / --</div>
+        </div>
+
+        <h4 class="mt-4 mb-3">Performance Details</h4>
+        
+        <table class="table table-bordered table-striped details-table">
+            <tbody>
+                <tr>
+                    <th>Subject/Quiz</th>
+                    <td id="quiz-subject">...</td>
+                </tr>
+                <tr>
+                    <th>Total Questions</th>
+                    <td id="total-questions">--</td>
+                </tr>
+                <tr>
+                    <th>Correct Answers</th>
+                    <td class="text-success fw-bold" id="correct-answers">--</td>
+                </tr>
+                <tr>
+                    <th>Incorrect Answers</th>
+                    <td class="text-danger fw-bold" id="incorrect-answers">--</td>
+                </tr>
+                <tr>
+                    <th>Time Taken</th>
+                    <td id="time-taken">--</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="mt-4">
+            <a href="user.html" class="btn btn-primary btn-lg px-5"><i class="fas fa-home me-2"></i> Return to Language Dashboard</a>
+            <a href="#" class="btn btn-outline-secondary btn-lg mt-2 mt-md-0"><i class="fas fa-eye me-2"></i> View Answers</a>
+        </div>
+        
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // =======================================================
+    // Function to read data from Local Storage and display it
+    // =======================================================
+
+    function displayResults() {
+        // 1. Read data from Local Storage
+        const score = parseInt(localStorage.getItem('finalScore')) || 0;
+        const total = parseInt(localStorage.getItem('totalQuestions')) || 10;
+        const subject = localStorage.getItem('quizSubject') || 'Unknown Quiz'; // Changed default subject text
+        const time = localStorage.getItem('timeTaken') || 'Not specified'; // Changed default time text
+        
+        // 2. Calculate variables
+        const correct = score;
+        const incorrect = total - score;
+        const passThreshold = total * 0.7; // 70% passing score
+        const isPassed = score >= passThreshold;
+
+        // 3. Update details text
+        document.getElementById('quiz-subject').textContent = subject;
+        document.getElementById('total-questions').textContent = total;
+        document.getElementById('correct-answers').textContent = correct;
+        document.getElementById('incorrect-answers').textContent = incorrect;
+        document.getElementById('time-taken').textContent = time;
+        document.getElementById('final-score').textContent = `${score} / ${total}`;
+        
+        // 4. Update visual state and messages (CRUCIAL TEXT CHANGE)
+        const resultIcon = document.getElementById('result-icon');
+        const resultTitle = document.getElementById('result-title');
+        const resultMessage = document.getElementById('result-message');
+        const scoreBox = document.getElementById('score-box');
+        const finalScoreText = document.getElementById('final-score');
+
+        // Clean initial icon state
+        resultIcon.classList.remove('fa-sync', 'fa-spin');
+
+
+        if (isPassed) {
+            // Pass state
+            resultIcon.classList.add('fa-check-circle', 'result-icon-success');
+            resultIcon.classList.remove('result-icon-fail');
+            
+            resultTitle.textContent = 'Congratulations! You Passed the Quiz.'; // English success title
+            resultMessage.textContent = `You achieved ${correct} correct answers out of ${total}. Excellent performance!`; // English success message
+            
+            scoreBox.classList.remove('border-danger');
+            scoreBox.classList.add('border-success');
+            finalScoreText.style.color = 'var(--clr-primary)'; 
+        } else {
+            // Fail state
+            resultIcon.classList.add('fa-times-circle', 'result-icon-fail');
+            resultIcon.classList.remove('result-icon-success');
+
+            resultTitle.textContent = 'Unfortunately, you did not pass this time.'; // English fail title
+            resultMessage.textContent = `You did not meet the required passing score (${Math.ceil(passThreshold)}/${total}). Please try again soon.`; // English fail message
+            
+            scoreBox.classList.remove('border-success');
+            scoreBox.classList.add('border-danger');
+            finalScoreText.style.color = '#dc3545'; // Danger Red
+        }
+        
+        // 5. Clear Local Storage data after display
+        localStorage.removeItem('finalScore');
+        localStorage.removeItem('totalQuestions');
+        localStorage.removeItem('quizSubject');
+        localStorage.removeItem('timeTaken');
+    }
+
+    // Run the results function when the page loads
+    displayResults();
+</script>
+
+</body>
+</html>

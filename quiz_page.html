@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
@@ -191,13 +191,13 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // =======================================================
-// 1. تعريف مصفوفة الأسئلة (بيانات وهمية لـ 10 أسئلة)
+// 1. تعريف مصفوفة الأسئلة
 // =======================================================
 const quizData = [
     {
         question: "1. What is the correct preposition to complete the sentence: 'She is good ______ playing the piano.'",
         options: ["at", "on", "in", "for"],
-        correct: "at" // القيمة الصحيحة هنا
+        correct: "at"
     },
     {
         question: "2. Which of the following is a synonym for 'ubiquitous'?",
@@ -246,7 +246,15 @@ const quizData = [
     }
 ];
 
-let currentQuestionIndex = 0; // تتبع رقم السؤال الحالي (البدء من الصفر)
+let currentQuestionIndex = 0;
+// مصفوفة جديدة لحفظ إجابات المستخدم
+const userAnswers = new Array(quizData.length).fill(null); 
+
+// إعدادات المؤقت
+const quizDurationMinutes = 20;
+let timeRemainingSeconds = quizDurationMinutes * 60;
+let timerInterval;
+let startTime; // لتسجيل وقت بدء الاختبار
 
 // =======================================================
 // 2. العناصر الرئيسية في الواجهة
@@ -257,36 +265,54 @@ const quizForm = document.getElementById('quiz-form');
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 const navButtonsContainer = document.querySelector('.d-flex.flex-wrap');
+const timerElement = document.getElementById('quiz-timer');
+const finishQuizBtn = document.querySelector('.btn-danger');
 
 // =======================================================
-// 3. وظيفة لعرض السؤال الحالي
+// 3. وظيفة لحفظ الإجابة الحالية
+// =======================================================
+function saveAnswer() {
+    const selected = quizForm.querySelector('input[name="answer"]:checked');
+    if (selected) {
+        userAnswers[currentQuestionIndex] = selected.value;
+    } else {
+        userAnswers[currentQuestionIndex] = null;
+    }
+}
+
+// =======================================================
+// 4. وظيفة لعرض السؤال الحالي
 // =======================================================
 function loadQuestion() {
+    saveAnswer(); // حفظ إجابة السؤال السابق قبل التحميل
+    
     const qData = quizData[currentQuestionIndex];
     
-    // 1. تحديث رقم السؤال
+    // 1. تحديث رقم السؤال ونص السؤال
     currentQNumberElement.textContent = currentQuestionIndex + 1;
-    
-    // 2. تحديث نص السؤال
     questionTextElement.textContent = qData.question;
     
-    // 3. تحديث الخيارات
-    quizForm.innerHTML = ''; // مسح الخيارات القديمة
+    // 2. تحديث الخيارات
+    quizForm.innerHTML = '';
+    const currentAnswer = userAnswers[currentQuestionIndex]; // استرجاع الإجابة المحفوظة
+
     qData.options.forEach((option, index) => {
+        const isChecked = option === currentAnswer ? 'checked' : '';
+        const optionLabel = String.fromCharCode(65 + index);
+        
         const optionHtml = `
             <label class="answer-option d-flex align-items-center">
-                <input type="radio" name="answer" value="${option}" class="form-check-input">
-                <span>${String.fromCharCode(65 + index)}) **${option}**</span>
+                <input type="radio" name="answer" value="${option}" class="form-check-input" ${isChecked}>
+                <span>${optionLabel}) <strong>${option}</strong></span>
             </label>
         `;
         quizForm.innerHTML += optionHtml;
     });
 
-    // 4. تحديث حالة أزرار التنقل (Previous/Next)
+    // 3. تحديث حالة أزرار التنقل (Previous/Next)
     prevBtn.disabled = currentQuestionIndex === 0;
-    nextBtn.disabled = currentQuestionIndex === quizData.length - 1;
-
-    // تغيير نص زر Next إلى 'Finish' إذا كان السؤال الأخير
+    
+    // تغيير زر 'Next' إلى 'Finish' إذا كان السؤال الأخير
     if (currentQuestionIndex === quizData.length - 1) {
         nextBtn.textContent = 'Finish Quiz';
         nextBtn.classList.remove('btn-primary');
@@ -296,34 +322,104 @@ function loadQuestion() {
         nextBtn.classList.remove('btn-success');
         nextBtn.classList.add('btn-primary');
     }
-
-    // 5. تحديث أزرار التنقل الجانبية
+    
+    // 4. تحديث أزرار التنقل الجانبية
     updateNavButtons();
 }
 
 // =======================================================
-// 4. وظيفة لتحديث حالة الأزرار الجانبية
+// 5. وظيفة لتحديث حالة الأزرار الجانبية
 // =======================================================
 function updateNavButtons() {
+    // إنشاء الأزرار إذا لم تكن موجودة
+    if (navButtonsContainer.children.length === 0) {
+        for(let i = 0; i < quizData.length; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = i + 1;
+            btn.addEventListener('click', () => {
+                currentQuestionIndex = i;
+                loadQuestion();
+            });
+            navButtonsContainer.appendChild(btn);
+        }
+    }
+
     const navButtons = navButtonsContainer.querySelectorAll('.btn');
     navButtons.forEach((button, index) => {
-        button.classList.remove('btn-question-current');
-        button.classList.remove('btn-question-unanswered');
-        button.classList.remove('btn-question-answered');
+        button.classList.remove('btn-question-current', 'btn-question-unanswered', 'btn-question-answered');
         
-        // هنا يمكن إضافة منطق لتحديد حالة الإجابة (answered/unanswered)
-        // حالياً سنحدد فقط السؤال الحالي
         if (index === currentQuestionIndex) {
             button.classList.add('btn-question-current');
+        } else if (userAnswers[index] !== null) {
+            button.classList.add('btn-question-answered');
         } else {
-            // مؤقتاً، نعتبرها غير مجاب عليها
             button.classList.add('btn-question-unanswered');
         }
     });
 }
 
 // =======================================================
-// 5. وظيفة التنقل
+// 6. منطق المؤقت
+// =======================================================
+function formatTime(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function startTimer() {
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+        timeRemainingSeconds--;
+        timerElement.textContent = formatTime(timeRemainingSeconds);
+
+        if (timeRemainingSeconds <= 60) {
+            timerElement.parentElement.classList.add('text-danger');
+        }
+        
+        if (timeRemainingSeconds <= 0) {
+            clearInterval(timerInterval);
+            alert("Time's up! Submitting your quiz now.");
+            submitQuiz();
+        }
+    }, 1000);
+}
+
+// =======================================================
+// 7. وظيفة إنهاء الاختبار وحساب النتيجة
+// =======================================================
+function submitQuiz() {
+    clearInterval(timerInterval);
+    saveAnswer(); // حفظ الإجابة الأخيرة
+
+    let score = 0;
+    
+    // حساب الدرجات
+    quizData.forEach((qData, index) => {
+        if (userAnswers[index] === qData.correct) {
+            score++;
+        }
+    });
+    
+    // حساب المدة المستغرقة
+    const finishTime = Date.now();
+    const totalTimeMs = finishTime - startTime;
+    const timeTaken = new Date(totalTimeMs).toISOString().slice(11, 19); 
+    
+    // حفظ النتائج في Local Storage (لقراءة صفحة النتائج لها)
+    localStorage.setItem('finalScore', score);
+    localStorage.setItem('totalQuestions', quizData.length);
+    localStorage.setItem('quizSubject', 'English Grammar Quiz');
+    localStorage.setItem('timeTaken', timeTaken); 
+    
+    // التوجيه إلى صفحة النتائج (التي قمت بترجمتها في طلبك السابق)
+    window.location.href = 'final_score.html';
+}
+
+
+// =======================================================
+// 8. معالجة الأحداث
 // =======================================================
 prevBtn.addEventListener('click', () => {
     if (currentQuestionIndex > 0) {
@@ -338,16 +434,28 @@ nextBtn.addEventListener('click', () => {
         loadQuestion();
     } else {
         // إذا كان الزر هو 'Finish Quiz'
-        alert('Quiz finished! (We will redirect you to the results page)');
-        // هنا يجب إضافة كود التوجيه لصفحة النتائج:
-        // window.location.href = 'result_page.html';
+        if (confirm('Are you sure you want to finish the quiz?')) {
+            submitQuiz();
+        }
     }
 });
 
+// زر 'Finish Quiz' الجانبي
+finishQuizBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to finish the quiz?')) {
+        submitQuiz();
+    }
+});
+
+
 // =======================================================
-// 6. تشغيل الاختبار عند تحميل الصفحة
+// 9. تشغيل الاختبار عند تحميل الصفحة
 // =======================================================
 loadQuestion();
+startTimer(); // بدء المؤقت
 </script>
 </body>
 </html>
+</body>
+</html>
+

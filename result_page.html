@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نتائج الاختبار - LandyForm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --clr-primary: #198754; /* Success Green */
+            --clr-secondary: #6c757d;
+            --clr-background: #f8f9fa; 
+        }
+
+        body {
+            background-color: var(--clr-background); 
+            font-family: 'Amiri', 'Tajawal', sans-serif;
+            direction: rtl; 
+            text-align: right;
+            padding-top: 50px;
+        }
+        
+        .result-container {
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .result-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 1rem 3rem rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+
+        .result-icon-success {
+            color: var(--clr-primary);
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .result-icon-fail {
+            color: #dc3545; /* Danger Red */
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        .score-display {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--clr-primary);
+        }
+        
+        .details-table th, .details-table td {
+            text-align: right !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container result-container">
+    <div class="card result-card text-center">
+        
+        <i class="fas fa-check-circle result-icon-success" id="result-icon"></i>
+        
+        <h1 class="fw-bold mb-3" id="result-title">تحميل النتائج...</h1>
+        
+        <p class="text-muted lead" id="result-message">يرجى الانتظار قليلاً بينما يتم معالجة أدائك.</p>
+
+        <hr>
+        
+        <div class="p-3 mb-4 rounded-3 border bg-light" id="score-box">
+            <p class="mb-2 text-dark">درجتك النهائية هي:</p>
+            <div class="score-display" id="final-score">-- / --</div>
+        </div>
+
+        <h4 class="mt-4 mb-3">تفاصيل الأداء</h4>
+        
+        <table class="table table-bordered table-striped details-table">
+            <tbody>
+                <tr>
+                    <th>المادة/الاختبار</th>
+                    <td id="quiz-subject">...</td>
+                </tr>
+                <tr>
+                    <th>عدد الأسئلة الكلي</th>
+                    <td id="total-questions">--</td>
+                </tr>
+                <tr>
+                    <th>الإجابات الصحيحة</th>
+                    <td class="text-success fw-bold" id="correct-answers">--</td>
+                </tr>
+                <tr>
+                    <th>الإجابات الخاطئة</th>
+                    <td class="text-danger fw-bold" id="incorrect-answers">--</td>
+                </tr>
+                <tr>
+                    <th>المدة المستغرقة</th>
+                    <td id="time-taken">--</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="mt-4">
+            <a href="user.html" class="btn btn-primary btn-lg px-5">العودة إلى لوحة اللغات <i class="fas fa-home me-2"></i></a>
+            <a href="#" class="btn btn-outline-secondary btn-lg mt-2 mt-md-0">عرض الإجابات <i class="fas fa-eye me-2"></i></a>
+        </div>
+        
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // =======================================================
+    // 2. كود JS لقراءة البيانات من Local Storage وعرضها
+    // =======================================================
+
+    function displayResults() {
+        // 1. قراءة البيانات من Local Storage
+        const score = parseInt(localStorage.getItem('finalScore')) || 0;
+        const total = parseInt(localStorage.getItem('totalQuestions')) || 10;
+        const subject = localStorage.getItem('quizSubject') || 'اختبار غير معروف';
+        const time = localStorage.getItem('timeTaken') || 'غير محدد';
+        
+        // 2. حساب المتغيرات
+        const correct = score;
+        const incorrect = total - score;
+        // درجة النجاح: 70% (7 من 10)
+        const passThreshold = total * 0.7; 
+        const isPassed = score >= passThreshold;
+
+        // 3. تحديث نصوص التفاصيل
+        document.getElementById('quiz-subject').textContent = subject;
+        document.getElementById('total-questions').textContent = total;
+        document.getElementById('correct-answers').textContent = correct;
+        document.getElementById('incorrect-answers').textContent = incorrect;
+        document.getElementById('time-taken').textContent = time;
+        document.getElementById('final-score').textContent = `${score} / ${total}`;
+        
+        // 4. تحديث الحالة البصرية والرسائل
+        const resultIcon = document.getElementById('result-icon');
+        const resultTitle = document.getElementById('result-title');
+        const resultMessage = document.getElementById('result-message');
+        const scoreBox = document.getElementById('score-box');
+
+        if (isPassed) {
+            // حالة النجاح
+            resultIcon.classList.remove('fa-times-circle', 'result-icon-fail');
+            resultIcon.classList.add('fa-check-circle', 'result-icon-success');
+            
+            resultTitle.textContent = 'تهانينا! لقد نجحت في الاختبار.';
+            resultMessage.textContent = `لقد حصلت على ${correct} إجابات صحيحة من أصل ${total}. أداء ممتاز!`;
+            scoreBox.classList.remove('border-danger');
+            scoreBox.classList.add('border-success');
+            document.getElementById('final-score').style.color = 'var(--clr-primary)'; 
+        } else {
+            // حالة الرسوب
+            resultIcon.classList.remove('fa-check-circle', 'result-icon-success');
+            resultIcon.classList.add('fa-times-circle', 'result-icon-fail');
+            
+            resultTitle.textContent = 'للأسف، لم تنجح هذه المرة.';
+            resultMessage.textContent = `لم تصل إلى درجة النجاح المطلوبة (${Math.ceil(passThreshold)}/${total}). يمكنك المحاولة مرة أخرى قريباً.`;
+            scoreBox.classList.remove('border-success');
+            scoreBox.classList.add('border-danger');
+            document.getElementById('final-score').style.color = '#dc3545'; // Danger Red
+        }
+        
+        // 5. مسح البيانات من Local Storage بعد العرض (اختياري، لكن جيد للتنظيف)
+        localStorage.removeItem('finalScore');
+        localStorage.removeItem('totalQuestions');
+        localStorage.removeItem('quizSubject');
+        localStorage.removeItem('timeTaken');
+    }
+
+    // تشغيل دالة عرض النتائج عند تحميل الصفحة
+    displayResults();
+</script>
+
+</body>
+</html>
