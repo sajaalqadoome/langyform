@@ -190,7 +190,180 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<script>
+// =======================================================
+// 1. تعريف مصفوفة الأسئلة (لغة فرنسية)
+// =======================================================
+const quizData = [
+    {
+        question: "1. Quelle est la conjugaison correcte du verbe 'être' à la première personne du singulier au présent ?",
+        options: ["Je suis", "J'ai", "Tu es", "Il est"],
+        correct: "Je suis"
+    },
+    {
+        question: "2. Choisissez le mot qui est féminin.",
+        options: ["Le livre", "La table", "Le stylo", "L'ordinateur"],
+        correct: "La table"
+    },
+    {
+        question: "3. Complétez la phrase: 'J'aime beaucoup ______ chocolat.'",
+        options: ["de", "du", "le", "un"],
+        correct: "le"
+    },
+    {
+        question: "4. Quelle est la traduction correcte de 'The big house'?",
+        options: ["La grande maison", "Le grande maison", "La maison grand", "Le maison grande"],
+        correct: "La grande maison"
+    },
+    {
+        question: "5. Trouvez l'adverbe dans la phrase: 'Elle parle rapidement.'",
+        options: ["Elle", "parle", "rapidement", "le"],
+        correct: "rapidement"
+    },
+    {
+        question: "6. Quel pronom convient pour remplacer 'mes amis'?",
+        options: ["Il", "Elle", "Ils", "Elles"],
+        correct: "Ils"
+    },
+    {
+        question: "7. Quel est l'opposé du mot 'chaud' (hot)?",
+        options: ["Froid", "Petit", "Gros", "Vieux"],
+        correct: "Froid"
+    },
+    {
+        question: "8. Quelle est la bonne préposition pour indiquer la provenance: 'Je viens ______ Paris.'",
+        options: ["à", "de", "sur", "dans"],
+        correct: "de"
+    },
+    {
+        question: "9. La forme plurielle de 'un journal' est:",
+        options: ["des journals", "des journales", "des journaux", "des journalles"],
+        correct: "des journaux"
+    },
+    {
+        question: "10. Lequel de ces chiffres est 'quatre-vingt-dix'?",
+        options: ["80", "90", "70", "100"],
+        correct: "90"
+    }
+];
 
+let currentQuestionIndex = 0; 
+
+// =======================================================
+// 2. العناصر الرئيسية في الواجهة (تمت ترجمة النصوص المرئية فقط)
+// =======================================================
+const questionTextElement = document.getElementById('question-text');
+const currentQNumberElement = document.getElementById('current-q-number');
+const quizForm = document.getElementById('quiz-form');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const navButtonsContainer = document.querySelector('.d-flex.flex-wrap');
+
+// =======================================================
+// 3. وظيفة لعرض السؤال الحالي
+// =======================================================
+function loadQuestion() {
+    const qData = quizData[currentQuestionIndex];
+    
+    // 1. تحديث رقم السؤال
+    currentQNumberElement.textContent = currentQuestionIndex + 1;
+    
+    // 2. تحديث نص السؤال
+    questionTextElement.textContent = qData.question;
+    
+    // 3. تحديث الخيارات
+    quizForm.innerHTML = ''; 
+    qData.options.forEach((option, index) => {
+        const optionHtml = `
+            <label class="answer-option d-flex align-items-center">
+                <input type="radio" name="answer" value="${option}" class="form-check-input">
+                <span>${String.fromCharCode(65 + index)}) **${option}**</span>
+            </label>
+        `;
+        quizForm.innerHTML += optionHtml;
+    });
+
+    // 4. تحديث حالة أزرار التنقل (Previous/Next)
+    prevBtn.disabled = currentQuestionIndex === 0;
+    
+    // تحديث نص زر Previous
+    prevBtn.innerHTML = '<i class="fas fa-chevron-left me-2"></i> Précédent';
+
+    nextBtn.disabled = currentQuestionIndex === quizData.length - 1;
+
+    // تغيير نص زر Next إلى 'Finish' إذا كان السؤال الأخير
+    if (currentQuestionIndex === quizData.length - 1) {
+        nextBtn.textContent = 'Terminer le Quiz';
+        nextBtn.classList.remove('btn-primary');
+        nextBtn.classList.add('btn-success');
+    } else {
+        nextBtn.innerHTML = 'Suivant <i class="fas fa-chevron-right ms-2"></i>';
+        nextBtn.classList.remove('btn-success');
+        nextBtn.classList.add('btn-primary');
+    }
+
+    // 5. تحديث أزرار التنقل الجانبية
+    updateNavButtons();
+}
+
+// =======================================================
+// 4. وظيفة لتحديث حالة الأزرار الجانبية
+// =======================================================
+function updateNavButtons() {
+    // هذه الدالة تعتمد على أن الأزرار تم تعريفها مسبقاً في HTML
+    const navButtons = navButtonsContainer.querySelectorAll('.btn');
+    navButtons.forEach((button, index) => {
+        button.classList.remove('btn-question-current');
+        button.classList.remove('btn-question-unanswered');
+        button.classList.remove('btn-question-answered');
+        
+        if (index === currentQuestionIndex) {
+            button.classList.add('btn-question-current');
+        } else {
+            // مؤقتاً، نعتبرها غير مجاب عليها
+            button.classList.add('btn-question-unanswered');
+        }
+    });
+}
+
+// =======================================================
+// 5. وظيفة التنقل
+// =======================================================
+prevBtn.addEventListener('click', () => {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+    }
+});
+
+nextBtn.addEventListener('click', () => {
+    if (currentQuestionIndex < quizData.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+    } else {
+        // إذا كان الزر هو 'Terminer le Quiz'
+        alert('Quiz terminé ! (Nous vous redirigerons vers les résultats)');
+        // window.location.href = 'result_page.html';
+    }
+});
+
+// ربط أزرار التنقل الجانبية
+navButtonsContainer.addEventListener('click', (event) => {
+    if (event.target.classList.contains('btn-question-unanswered') || event.target.classList.contains('btn-question-current')) {
+        const questionNumber = parseInt(event.target.textContent);
+        if (!isNaN(questionNumber)) {
+            currentQuestionIndex = questionNumber - 1;
+            loadQuestion();
+        }
+    }
+});
+
+
+// =======================================================
+// 6. تشغيل الاختبار عند تحميل الصفحة
+// =======================================================
+loadQuestion();
+</script>
 
 </body>
 </html>

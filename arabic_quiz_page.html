@@ -201,7 +201,180 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<script>
+// =======================================================
+// 1. تعريف مصفوفة الأسئلة (لغة عربية)
+// =======================================================
+const quizData = [
+    {
+        question: "1. ما هو الإعراب الصحيح لكلمة 'الرجل' في جملة: 'جاء الرجلُ مسرعاً'؟",
+        options: ["فاعل مرفوع", "مفعول به منصوب", "مبتدأ مرفوع", "خبر مرفوع"],
+        correct: "فاعل مرفوع"
+    },
+    {
+        question: "2. ما هو نوع المشتق في كلمة 'كاتب'؟",
+        options: ["اسم فاعل", "اسم مفعول", "صفة مشبهة", "صيغة مبالغة"],
+        correct: "اسم فاعل"
+    },
+    {
+        question: "3. أي الكلمات التالية تعتبر من جمع التكسير؟",
+        options: ["معلمون", "مهندسات", "أقلام", "مسلمون"],
+        correct: "أقلام"
+    },
+    {
+        question: "4. ما هو الفعل الماضي من المصدر 'قراءة'؟",
+        options: ["يقرأ", "قرأ", "قريء", "قراء"],
+        correct: "قرأ"
+    },
+    {
+        question: "5. ما هو حرف الجر المناسب لإكمال الجملة: 'ذهبتُ ______ المدرسة.'؟",
+        options: ["عن", "من", "إلى", "على"],
+        correct: "إلى"
+    },
+    {
+        question: "6. ما معنى كلمة 'غضنفر'؟",
+        options: ["حصان", "جمل", "أسد", "فهد"],
+        correct: "أسد"
+    },
+    {
+        question: "7. في الجملة 'إنّ الحقَّ واضحٌ'، ما هو اسم 'إنّ'؟",
+        options: ["إنّ", "الحقَّ", "واضحٌ", "مُبتدأ"],
+        correct: "الحقَّ"
+    },
+    {
+        question: "8. ما هي علامة الترقيم التي تستخدم بعد السؤال؟",
+        options: ["النقطة (.)", "الفاصلة (,)", "علامة التعجب (!)", "علامة الاستفهام (؟)"],
+        correct: "علامة الاستفهام (؟)"
+    },
+    {
+        question: "9. المبتدأ والخبر يكونان دائماً:",
+        options: ["منصوبين", "مجرورين", "مرفوعين", "مجزومين"],
+        correct: "مرفوعين"
+    },
+    {
+        question: "10. ما هو نوع الأسلوب في جملة: 'يا خالدُ، اجتهد في دراستك.'؟",
+        options: ["استفهام", "تعجب", "نداء", "نهي"],
+        correct: "نداء"
+    }
+];
 
+let currentQuestionIndex = 0; 
+
+// =======================================================
+// 2. العناصر الرئيسية في الواجهة
+// =======================================================
+const questionTextElement = document.getElementById('question-text');
+const currentQNumberElement = document.getElementById('current-q-number');
+const quizForm = document.getElementById('quiz-form');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const navButtonsContainer = document.querySelector('.d-flex.flex-wrap');
+
+// =======================================================
+// 3. وظيفة لعرض السؤال الحالي
+// =======================================================
+function loadQuestion() {
+    const qData = quizData[currentQuestionIndex];
+    
+    // 1. تحديث رقم السؤال
+    currentQNumberElement.textContent = currentQuestionIndex + 1;
+    
+    // 2. تحديث نص السؤال
+    questionTextElement.textContent = qData.question;
+    
+    // 3. تحديث الخيارات
+    quizForm.innerHTML = ''; 
+    qData.options.forEach((option, index) => {
+        // استخدام الأحرف العربية للترقيم (أ، ب، ج، د)
+        const arabicLetters = ['أ', 'ب', 'ج', 'د'];
+        const optionHtml = `
+            <label class="answer-option d-flex align-items-center">
+                <input type="radio" name="answer" value="${option}" class="form-check-input">
+                <span>${arabicLetters[index]}) **${option}**</span>
+            </label>
+        `;
+        quizForm.innerHTML += optionHtml;
+    });
+
+    // 4. تحديث حالة أزرار التنقل (Previous/Next)
+    prevBtn.disabled = currentQuestionIndex === 0;
+    
+    // تحديث نص زر Previous
+    prevBtn.innerHTML = '<i class="fas fa-chevron-left me-2"></i> السابق';
+
+    nextBtn.disabled = currentQuestionIndex === quizData.length - 1;
+
+    // تغيير نص زر Next إلى 'Finish' إذا كان السؤال الأخير
+    if (currentQuestionIndex === quizData.length - 1) {
+        nextBtn.textContent = 'إنهاء الاختبار';
+        nextBtn.classList.remove('btn-primary');
+        nextBtn.classList.add('btn-success');
+    } else {
+        nextBtn.innerHTML = 'التالي <i class="fas fa-chevron-right ms-2"></i>';
+        nextBtn.classList.remove('btn-success');
+        nextBtn.classList.add('btn-primary');
+    }
+
+    // 5. تحديث أزرار التنقل الجانبية
+    updateNavButtons();
+}
+
+// =======================================================
+// 4. وظيفة لتحديث حالة الأزرار الجانبية
+// =======================================================
+function updateNavButtons() {
+    const navButtons = navButtonsContainer.querySelectorAll('.btn');
+    navButtons.forEach((button, index) => {
+        button.classList.remove('btn-question-current');
+        button.classList.remove('btn-question-unanswered');
+        button.classList.remove('btn-question-answered');
+        
+        if (index === currentQuestionIndex) {
+            button.classList.add('btn-question-current');
+        } else {
+            button.classList.add('btn-question-unanswered');
+        }
+    });
+}
+
+// =======================================================
+// 5. وظيفة التنقل
+// =======================================================
+prevBtn.addEventListener('click', () => {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+    }
+});
+
+nextBtn.addEventListener('click', () => {
+    if (currentQuestionIndex < quizData.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+    } else {
+        // إذا كان الزر هو 'إنهاء الاختبار'
+        alert('تم إنهاء الاختبار! (سيتم توجيهك إلى صفحة النتائج)');
+        // window.location.href = 'result_page.html';
+    }
+});
+
+// ربط أزرار التنقل الجانبية
+navButtonsContainer.addEventListener('click', (event) => {
+    if (event.target.classList.contains('btn-question-unanswered') || event.target.classList.contains('btn-question-current')) {
+        const questionNumber = parseInt(event.target.textContent);
+        if (!isNaN(questionNumber)) {
+            currentQuestionIndex = questionNumber - 1;
+            loadQuestion();
+        }
+    }
+});
+
+
+// =======================================================
+// 6. تشغيل الاختبار عند تحميل الصفحة
+// =======================================================
+loadQuestion();
+</script>
 
 </body>
 </html>

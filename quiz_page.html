@@ -189,6 +189,165 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// =======================================================
+// 1. تعريف مصفوفة الأسئلة (بيانات وهمية لـ 10 أسئلة)
+// =======================================================
+const quizData = [
+    {
+        question: "1. What is the correct preposition to complete the sentence: 'She is good ______ playing the piano.'",
+        options: ["at", "on", "in", "for"],
+        correct: "at" // القيمة الصحيحة هنا
+    },
+    {
+        question: "2. Which of the following is a synonym for 'ubiquitous'?",
+        options: ["Rare", "Omnipresent", "Obscure", "Fictional"],
+        correct: "Omnipresent"
+    },
+    {
+        question: "3. Choose the sentence with the correct subject-verb agreement.",
+        options: ["The dogs runs fast.", "The dog run fast.", "The dogs run fast.", "The dog running fast."],
+        correct: "The dogs run fast."
+    },
+    {
+        question: "4. What is the past tense of the verb 'to slay'?",
+        options: ["Slayed", "Slo", "Slew", "Slin"],
+        correct: "Slew"
+    },
+    {
+        question: "5. Identify the figure of speech: 'The silence was deafening.'",
+        options: ["Metaphor", "Simile", "Oxymoron", "Hyperbole"],
+        correct: "Oxymoron"
+    },
+    {
+        question: "6. Which punctuation mark is used to indicate possession?",
+        options: ["Comma (,)", "Semicolon (;)", "Apostrophe (')", "Colon (:)"],
+        correct: "Apostrophe (')"
+    },
+    {
+        question: "7. Complete the phrase: 'A penny saved is a penny ______.'",
+        options: ["earned", "kept", "spent", "found"],
+        correct: "earned"
+    },
+    {
+        question: "8. The word 'flammable' is most closely related to:",
+        options: ["Water", "Fire", "Ice", "Stone"],
+        correct: "Fire"
+    },
+    {
+        question: "9. Which word is an adjective?",
+        options: ["Quickly", "Run", "Beautiful", "Happiness"],
+        correct: "Beautiful"
+    },
+    {
+        question: "10. In the sentence, 'He writes neatly.', what type of word is 'neatly'?",
+        options: ["Adverb", "Adjective", "Noun", "Verb"],
+        correct: "Adverb"
+    }
+];
 
+let currentQuestionIndex = 0; // تتبع رقم السؤال الحالي (البدء من الصفر)
+
+// =======================================================
+// 2. العناصر الرئيسية في الواجهة
+// =======================================================
+const questionTextElement = document.getElementById('question-text');
+const currentQNumberElement = document.getElementById('current-q-number');
+const quizForm = document.getElementById('quiz-form');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const navButtonsContainer = document.querySelector('.d-flex.flex-wrap');
+
+// =======================================================
+// 3. وظيفة لعرض السؤال الحالي
+// =======================================================
+function loadQuestion() {
+    const qData = quizData[currentQuestionIndex];
+    
+    // 1. تحديث رقم السؤال
+    currentQNumberElement.textContent = currentQuestionIndex + 1;
+    
+    // 2. تحديث نص السؤال
+    questionTextElement.textContent = qData.question;
+    
+    // 3. تحديث الخيارات
+    quizForm.innerHTML = ''; // مسح الخيارات القديمة
+    qData.options.forEach((option, index) => {
+        const optionHtml = `
+            <label class="answer-option d-flex align-items-center">
+                <input type="radio" name="answer" value="${option}" class="form-check-input">
+                <span>${String.fromCharCode(65 + index)}) **${option}**</span>
+            </label>
+        `;
+        quizForm.innerHTML += optionHtml;
+    });
+
+    // 4. تحديث حالة أزرار التنقل (Previous/Next)
+    prevBtn.disabled = currentQuestionIndex === 0;
+    nextBtn.disabled = currentQuestionIndex === quizData.length - 1;
+
+    // تغيير نص زر Next إلى 'Finish' إذا كان السؤال الأخير
+    if (currentQuestionIndex === quizData.length - 1) {
+        nextBtn.textContent = 'Finish Quiz';
+        nextBtn.classList.remove('btn-primary');
+        nextBtn.classList.add('btn-success');
+    } else {
+        nextBtn.innerHTML = 'Next <i class="fas fa-chevron-right ms-2"></i>';
+        nextBtn.classList.remove('btn-success');
+        nextBtn.classList.add('btn-primary');
+    }
+
+    // 5. تحديث أزرار التنقل الجانبية
+    updateNavButtons();
+}
+
+// =======================================================
+// 4. وظيفة لتحديث حالة الأزرار الجانبية
+// =======================================================
+function updateNavButtons() {
+    const navButtons = navButtonsContainer.querySelectorAll('.btn');
+    navButtons.forEach((button, index) => {
+        button.classList.remove('btn-question-current');
+        button.classList.remove('btn-question-unanswered');
+        button.classList.remove('btn-question-answered');
+        
+        // هنا يمكن إضافة منطق لتحديد حالة الإجابة (answered/unanswered)
+        // حالياً سنحدد فقط السؤال الحالي
+        if (index === currentQuestionIndex) {
+            button.classList.add('btn-question-current');
+        } else {
+            // مؤقتاً، نعتبرها غير مجاب عليها
+            button.classList.add('btn-question-unanswered');
+        }
+    });
+}
+
+// =======================================================
+// 5. وظيفة التنقل
+// =======================================================
+prevBtn.addEventListener('click', () => {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+    }
+});
+
+nextBtn.addEventListener('click', () => {
+    if (currentQuestionIndex < quizData.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+    } else {
+        // إذا كان الزر هو 'Finish Quiz'
+        alert('Quiz finished! (We will redirect you to the results page)');
+        // هنا يجب إضافة كود التوجيه لصفحة النتائج:
+        // window.location.href = 'result_page.html';
+    }
+});
+
+// =======================================================
+// 6. تشغيل الاختبار عند تحميل الصفحة
+// =======================================================
+loadQuestion();
+</script>
 </body>
 </html>

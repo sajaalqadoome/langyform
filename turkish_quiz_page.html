@@ -188,6 +188,176 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<script>
+// =======================================================
+// 1. تعريف مصفوفة الأسئلة (لغة تركية)
+// =======================================================
+const quizData = [
+    {
+        question: "1. 'Ben' zamirinin şimdiki zamanda doğru fiil çekimi nedir? (Gelmek)",
+        options: ["Geliyorum", "Geliyorsun", "Gelir", "Geldi"],
+        correct: "Geliyorum"
+    },
+    {
+        question: "2. Hangi kelime çoğuldur?",
+        options: ["Kitap", "Kalem", "Evler", "Sandalye"],
+        correct: "Evler"
+    },
+    {
+        question: "3. 'Büyük' kelimesinin zıt anlamlısı nedir?",
+        options: ["Uzun", "Küçük", "Genç", "Hızlı"],
+        correct: "Küçük"
+    },
+    {
+        question: "4. Cümleyi doğru edatla tamamlayın: 'Ali okuldan ______ geliyor.'",
+        options: ["ile", "ve", "de", "dan"],
+        correct: "dan"
+    },
+    {
+        question: "5. 'O' zamiri hangi durumlar için kullanılır?",
+        options: ["Sadece insanlar", "Sadece cansız varlıklar", "Hem insanlar hem nesneler", "Hayvanlar"],
+        correct: "Hem insanlar hem nesneler"
+    },
+    {
+        question: "6. 'Akşam' kelimesinin İngilizce karşılığı nedir?",
+        options: ["Morning", "Afternoon", "Evening", "Night"],
+        correct: "Evening"
+    },
+    {
+        question: "7. Hangi ek, aitlik (iyelik) ifade eder? (Örn: Benim kitabım)",
+        options: ["-ler", "-di", "-im", "-ecek"],
+        correct: "-im"
+    },
+    {
+        question: "8. 'Çalışkan' kelimesi hangi türdedir?",
+        options: ["Fiil (Verb)", "İsim (Noun)", "Sıfat (Adjective)", "Zarf (Adverb)"],
+        correct: "Sıfat (Adjective)"
+    },
+    {
+        question: "9. Hangi sayı 'kırk beş'tir?",
+        options: ["40", "45", "54", "50"],
+        correct: "45"
+    },
+    {
+        question: "10. 'Gülmek' fiilinin geçmiş zamanı nedir? (O)",
+        options: ["Gülüyor", "Güldü", "Gülecek", "Gülmeli"],
+        correct: "Güldü"
+    }
+];
+
+let currentQuestionIndex = 0; 
+
+// =======================================================
+// 2. العناصر الرئيسية في الواجهة
+// =======================================================
+const questionTextElement = document.getElementById('question-text');
+const currentQNumberElement = document.getElementById('current-q-number');
+const quizForm = document.getElementById('quiz-form');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const navButtonsContainer = document.querySelector('.d-flex.flex-wrap');
+
+// =======================================================
+// 3. وظيفة لعرض السؤال الحالي
+// =======================================================
+function loadQuestion() {
+    const qData = quizData[currentQuestionIndex];
+    
+    // 1. تحديث رقم السؤال
+    currentQNumberElement.textContent = currentQuestionIndex + 1;
+    
+    // 2. تحديث نص السؤال
+    questionTextElement.textContent = qData.question;
+    
+    // 3. تحديث الخيارات
+    quizForm.innerHTML = ''; 
+    qData.options.forEach((option, index) => {
+        const optionHtml = `
+            <label class="answer-option d-flex align-items-center">
+                <input type="radio" name="answer" value="${option}" class="form-check-input">
+                <span>${String.fromCharCode(65 + index)}) **${option}**</span>
+            </label>
+        `;
+        quizForm.innerHTML += optionHtml;
+    });
+
+    // 4. تحديث حالة أزرار التنقل (Previous/Next)
+    prevBtn.disabled = currentQuestionIndex === 0;
+    
+    // تحديث نص زر Previous
+    prevBtn.innerHTML = '<i class="fas fa-chevron-left me-2"></i> Önceki';
+
+    nextBtn.disabled = currentQuestionIndex === quizData.length - 1;
+
+    // تغيير نص زر Next إلى 'Finish' إذا كان السؤال الأخير
+    if (currentQuestionIndex === quizData.length - 1) {
+        nextBtn.textContent = 'Testi Bitir';
+        nextBtn.classList.remove('btn-primary');
+        nextBtn.classList.add('btn-success');
+    } else {
+        nextBtn.innerHTML = 'Sonraki <i class="fas fa-chevron-right ms-2"></i>';
+        nextBtn.classList.remove('btn-success');
+        nextBtn.classList.add('btn-primary');
+    }
+
+    // 5. تحديث أزرار التنقل الجانبية
+    updateNavButtons();
+}
+
+// =======================================================
+// 4. وظيفة لتحديث حالة الأزرار الجانبية
+// =======================================================
+function updateNavButtons() {
+    const navButtons = navButtonsContainer.querySelectorAll('.btn');
+    navButtons.forEach((button, index) => {
+        button.classList.remove('btn-question-current');
+        button.classList.remove('btn-question-unanswered');
+        button.classList.remove('btn-question-answered');
+        
+        if (index === currentQuestionIndex) {
+            button.classList.add('btn-question-current');
+        } else {
+            button.classList.add('btn-question-unanswered');
+        }
+    });
+}
+
+// =======================================================
+// 5. وظيفة التنقل
+// =======================================================
+prevBtn.addEventListener('click', () => {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+    }
+});
+
+nextBtn.addEventListener('click', () => {
+    if (currentQuestionIndex < quizData.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+    } else {
+        // إذا كان الزر هو 'Testi Bitir'
+        alert('Test bitti! (Sonuçlar sayfasına yönlendirileceksiniz)');
+        // window.location.href = 'result_page.html';
+    }
+});
+
+// ربط أزرار التنقل الجانبية
+navButtonsContainer.addEventListener('click', (event) => {
+    if (event.target.classList.contains('btn-question-unanswered') || event.target.classList.contains('btn-question-current')) {
+        const questionNumber = parseInt(event.target.textContent);
+        if (!isNaN(questionNumber)) {
+            currentQuestionIndex = questionNumber - 1;
+            loadQuestion();
+        }
+    }
+});
+
+
+
+loadQuestion();
+</script>
 
 </body>
 </html>

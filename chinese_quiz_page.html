@@ -188,7 +188,171 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<script>
+// =======================================================
+// 1. تعريف مصفوفة الأسئلة (لغة صينية)
+// =======================================================
+const quizData = [
+    {
+        question: "1. '你好' (nǐ hǎo) 的正确意思是:",
+        options: ["Goodbye", "Thank you", "Hello", "Please"],
+        correct: "Hello"
+    },
+    {
+        question: "2. 哪个词是量词 (Measure Word)？",
+        options: ["书 (shū - book)", "个 (gè - a general measure word)", "吃 (chī - eat)", "大 (dà - big)"],
+        correct: "个 (gè - a general measure word)"
+    },
+    {
+        question: "3. '我学习汉语' 的拼音 (Pinyin) 是:",
+        options: ["Wǒ xuéxí Hànyǔ", "Wǒ hǎo Hànyǔ", "Wǒ ài Hànzì", "Wǒ kàn Zhōngwén"],
+        correct: "Wǒ xuéxí Hànyǔ"
+    },
+    {
+        question: "4. 完成句子: '这是我 ______ 电脑。'",
+        options: ["是 (shì)", "的 (de)", "有 (yǒu)", "吗 (ma)"],
+        correct: "的 (de)"
+    },
+    {
+        question: "5. '我爱我的家' 是什么意思？",
+        options: ["I miss my home", "I love my family", "I like my city", "I want to go home"],
+        correct: "I love my family"
+    },
+    {
+        question: "6. 哪个是正确的顺序: '我 / 是 / 学生'",
+        options: ["我学生是", "学生我是", "我是学生", "是学生我"],
+        correct: "我是学生"
+    },
+    {
+        question: "7. 哪个数字是 '二十一' (èr shí yī)？",
+        options: ["12", "20", "21", "10"],
+        correct: "21"
+    },
+    {
+        question: "8. 哪个词是动词 (Verb)？",
+        options: ["高兴 (gāoxìng - happy)", "水 (shuǐ - water)", "跑 (pǎo - run)", "漂亮 (piàoliang - beautiful)"],
+        correct: "跑 (pǎo - run)"
+    },
+    {
+        question: "9. '你' 的敬语 (Formal form) 是什么？",
+        options: ["他 (tā)", "您 (nín)", "们 (men)", "我 (wǒ)"],
+        correct: "您 (nín)"
+    },
+    {
+        question: "10. '今天' (jīn tiān) 的意思是:",
+        options: ["Yesterday", "Tomorrow", "Today", "Next year"],
+        correct: "Today"
+    }
+];
 
+let currentQuestionIndex = 0; 
+
+// =======================================================
+// 2. العناصر الرئيسية في الواجهة
+// =======================================================
+const questionTextElement = document.getElementById('question-text');
+const currentQNumberElement = document.getElementById('current-q-number');
+const quizForm = document.getElementById('quiz-form');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const navButtonsContainer = document.querySelector('.d-flex.flex-wrap');
+
+// =======================================================
+// 3. وظيفة لعرض السؤال الحالي
+// =======================================================
+function loadQuestion() {
+    const qData = quizData[currentQuestionIndex];
+    
+    // 1. تحديث رقم السؤال
+    currentQNumberElement.textContent = currentQuestionIndex + 1;
+    
+    // 2. تحديث نص السؤال
+    questionTextElement.textContent = qData.question;
+    
+    // 3. تحديث الخيارات
+    quizForm.innerHTML = ''; 
+    qData.options.forEach((option, index) => {
+        const optionHtml = `
+            <label class="answer-option d-flex align-items-center">
+                <input type="radio" name="answer" value="${option}" class="form-check-input">
+                <span>${String.fromCharCode(65 + index)}) **${option}**</span>
+            </label>
+        `;
+        quizForm.innerHTML += optionHtml;
+    });
+
+    // 4. تحديث حالة أزرار التنقل (Previous/Next)
+    prevBtn.disabled = currentQuestionIndex === 0;
+    
+    // تحديث نص زر Previous
+    prevBtn.innerHTML = '<i class="fas fa-chevron-left me-2"></i> 上一题 (Previous)';
+
+    nextBtn.disabled = currentQuestionIndex === quizData.length - 1;
+
+    if (currentQuestionIndex === quizData.length - 1) {
+        nextBtn.textContent = '结束测验 (Finish Quiz)';
+        nextBtn.classList.remove('btn-primary');
+        nextBtn.classList.add('btn-success');
+    } else {
+        nextBtn.innerHTML = '下一题 (Next) <i class="fas fa-chevron-right ms-2"></i>';
+        nextBtn.classList.remove('btn-success');
+        nextBtn.classList.add('btn-primary');
+    }
+
+    // 5. تحديث أزرار التنقل الجانبية
+    updateNavButtons();
+}
+
+
+function updateNavButtons() {
+    const navButtons = navButtonsContainer.querySelectorAll('.btn');
+    navButtons.forEach((button, index) => {
+        button.classList.remove('btn-question-current');
+        button.classList.remove('btn-question-unanswered');
+        button.classList.remove('btn-question-answered');
+        
+        if (index === currentQuestionIndex) {
+            button.classList.add('btn-question-current');
+        } else {
+            button.classList.add('btn-question-unanswered');
+        }
+    });
+}
+
+
+prevBtn.addEventListener('click', () => {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+    }
+});
+
+nextBtn.addEventListener('click', () => {
+    if (currentQuestionIndex < quizData.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+    } else {
+        // إذا كان الزر هو '结束测验'
+        alert('测验结束! (你将被重定向到结果页面)');
+        // window.location.href = 'result_page.html';
+    }
+});
+
+// ربط أزرار التنقل الجانبية
+navButtonsContainer.addEventListener('click', (event) => {
+    if (event.target.classList.contains('btn-question-unanswered') || event.target.classList.contains('btn-question-current')) {
+        const questionNumber = parseInt(event.target.textContent);
+        if (!isNaN(questionNumber)) {
+            currentQuestionIndex = questionNumber - 1;
+            loadQuestion();
+        }
+    }
+});
+
+
+
+loadQuestion();
+</script>
 
 </body>
 </html>
