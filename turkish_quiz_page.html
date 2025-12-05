@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html lang="fr" dir="ltr">
+<html lang="tr" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz de Langue Française - LandyForm</title>
+    <title>Türkçe Testi - LandyForm</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <style>
         :root {
-            --clr-primary: #007bff; /* Blue for French */
+            --clr-primary: #dc3545; /* Red for Turkish */
             --clr-secondary: #6c757d;
             --clr-background: #f8f9fa; 
             --clr-quiz-border: #dee2e6;
+            --clr-text: #212529;
         }
 
         body {
@@ -23,7 +24,7 @@
             text-align: left;
         }
         
-        /* Quiz Layout (Content only, no sidebar) */
+        /* Quiz Layout */
         .quiz-container {
             padding: 3rem 1rem;
             max-width: 1200px;
@@ -58,7 +59,7 @@
         }
 
         .answer-option:hover {
-            background-color: #e6f0ff; /* Light blue hover background */
+            background-color: #ffe6e8; /* Light red hover background */
             border-color: var(--clr-primary);
         }
 
@@ -97,8 +98,8 @@
             border-color: var(--clr-primary);
         }
         .btn-question-current {
-            background-color: #ffc107; 
-            color: #212529;
+            background-color: #ffc107; /* Yellow for current */
+            color: var(--clr-text);
             box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.5);
         }
     </style>
@@ -107,8 +108,8 @@
 
 <div class="quiz-container">
     <div class="text-center mb-5">
-        <h1 class="fw-bold" style="color: var(--clr-primary) !important;">Quiz de Grammaire Française (Niveau Intermédiaire)</h1>
-        <p class="text-muted">Vous avez 20 minutes pour compléter 10 questions.</p>
+        <h1 class="fw-bold" style="color: var(--clr-primary) !important;">Türkçe Dil Bilgisi Testi (Orta Seviye)</h1>
+        <p class="text-muted">10 soruyu tamamlamak için 20 dakikanız var.</p>
     </div>
 
     <div class="row">
@@ -116,31 +117,28 @@
         <div class="col-lg-9">
             <div class="card quiz-card p-4">
                 
-                <h2 class="mb-4 text-primary" style="color: var(--clr-primary) !important;">Question <span id="current-q-number">1</span> sur 10</h2>
+                <h2 class="mb-4 text-primary" style="color: var(--clr-primary) !important;">Soru <span id="current-q-number">1</span> / 10</h2>
                 
                 <div class="question-text" id="question-text">
-                    Quelle est la conjugaison correcte du verbe 'être' à la première personne du singulier au présent ?
+                    'Ben' zamirinin şimdiki zamanda doğru fiil çekimi nedir? (Gelmek)
                 </div>
 
                 <form id="quiz-form">
                     <label class="answer-option d-flex align-items-center">
                         <input type="radio" name="answer" value="a" class="form-check-input">
-                        <span>A) **Je suis**</span>
+                        <span>A) **Geliyorum**</span>
                     </label>
-
                     <label class="answer-option d-flex align-items-center">
                         <input type="radio" name="answer" value="b" class="form-check-input">
-                        <span>B) **J'ai**</span>
+                        <span>B) **Geliyorsun**</span>
                     </label>
-
                     <label class="answer-option d-flex align-items-center">
                         <input type="radio" name="answer" value="c" class="form-check-input">
-                        <span>C) **Tu es**</span>
+                        <span>C) **Gelir**</span>
                     </label>
-
                     <label class="answer-option d-flex align-items-center">
                         <input type="radio" name="answer" value="d" class="form-check-input">
-                        <span>D) **Il est**</span>
+                        <span>D) **Geldi**</span>
                     </label>
                 </form>
                 
@@ -148,10 +146,10 @@
 
                 <div class="d-flex justify-content-between">
                     <button id="prev-btn" class="btn btn-secondary px-4 py-2" disabled>
-                        <i class="fas fa-chevron-left me-2"></i> Précédent
+                        <i class="fas fa-chevron-left me-2"></i> Önceki
                     </button>
                     <button id="next-btn" class="btn btn-primary px-4 py-2" style="background-color: var(--clr-primary); border-color: var(--clr-primary);">
-                        Suivant <i class="fas fa-chevron-right ms-2"></i>
+                        Sonraki <i class="fas fa-chevron-right ms-2"></i>
                     </button>
                 </div>
             </div>
@@ -159,10 +157,10 @@
 
         <div class="col-lg-3">
             <div class="question-nav-sidebar text-center">
-                <h5 class="fw-bold mb-3"><i class="fas fa-list-ol me-2"></i> Progression</h5>
+                <h5 class="fw-bold mb-3"><i class="fas fa-list-ol me-2"></i> İlerleme</h5>
                 
                 <div class="bg-light p-2 rounded mb-4">
-                    <p class="mb-0 fw-bold text-danger"><i class="fas fa-clock me-2"></i> Temps Restant: <span id="quiz-timer">19:50</span></p>
+                    <p class="mb-0 fw-bold text-danger"><i class="fas fa-clock me-2"></i> Kalan Süre: <span id="quiz-timer">19:50</span></p>
                 </div>
 
                 <div class="d-flex flex-wrap justify-content-center">
@@ -181,7 +179,7 @@
                 <hr class="my-3">
                 
                 <button class="btn btn-danger w-100 mt-2 py-2">
-                    <i class="fas fa-check-circle me-2"></i> Terminer le Quiz
+                    <i class="fas fa-check-circle me-2"></i> Testi Bitir
                 </button>
             </div>
         </div>
@@ -189,7 +187,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 
 
 </body>

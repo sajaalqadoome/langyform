@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html lang="fr" dir="ltr">
+<html lang="es" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz de Langue Française - LandyForm</title>
+    <title>Cuestionario de Español - LandyForm</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <style>
         :root {
-            --clr-primary: #007bff; /* Blue for French */
+            --clr-primary: #ffc107; /* Yellow/Orange for Spanish */
             --clr-secondary: #6c757d;
             --clr-background: #f8f9fa; 
             --clr-quiz-border: #dee2e6;
+            --clr-text: #212529; /* Dark text for contrast */
         }
 
         body {
@@ -58,7 +59,7 @@
         }
 
         .answer-option:hover {
-            background-color: #e6f0ff; /* Light blue hover background */
+            background-color: #fffbe6; /* Light yellow hover background */
             border-color: var(--clr-primary);
         }
 
@@ -93,13 +94,13 @@
         }
         .btn-question-answered {
             background-color: var(--clr-primary);
-            color: white;
+            color: var(--clr-text);
             border-color: var(--clr-primary);
         }
         .btn-question-current {
-            background-color: #ffc107; 
-            color: #212529;
-            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.5);
+            background-color: #dc3545; /* Red for current */
+            color: white;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.5);
         }
     </style>
 </head>
@@ -107,8 +108,8 @@
 
 <div class="quiz-container">
     <div class="text-center mb-5">
-        <h1 class="fw-bold" style="color: var(--clr-primary) !important;">Quiz de Grammaire Française (Niveau Intermédiaire)</h1>
-        <p class="text-muted">Vous avez 20 minutes pour compléter 10 questions.</p>
+        <h1 class="fw-bold" style="color: var(--clr-primary) !important;">Cuestionario de Español (Nivel Intermedio)</h1>
+        <p class="text-muted">Tienes 20 minutos para completar 10 preguntas.</p>
     </div>
 
     <div class="row">
@@ -116,31 +117,28 @@
         <div class="col-lg-9">
             <div class="card quiz-card p-4">
                 
-                <h2 class="mb-4 text-primary" style="color: var(--clr-primary) !important;">Question <span id="current-q-number">1</span> sur 10</h2>
+                <h2 class="mb-4" style="color: var(--clr-primary) !important;">Pregunta <span id="current-q-number">1</span> de 10</h2>
                 
                 <div class="question-text" id="question-text">
-                    Quelle est la conjugaison correcte du verbe 'être' à la première personne du singulier au présent ?
+                    ¿Cuál es la conjugación correcta del verbo 'ser' para 'Yo' en presente?
                 </div>
 
                 <form id="quiz-form">
                     <label class="answer-option d-flex align-items-center">
                         <input type="radio" name="answer" value="a" class="form-check-input">
-                        <span>A) **Je suis**</span>
+                        <span>A) **Soy**</span>
                     </label>
-
                     <label class="answer-option d-flex align-items-center">
                         <input type="radio" name="answer" value="b" class="form-check-input">
-                        <span>B) **J'ai**</span>
+                        <span>B) **Estoy**</span>
                     </label>
-
                     <label class="answer-option d-flex align-items-center">
                         <input type="radio" name="answer" value="c" class="form-check-input">
-                        <span>C) **Tu es**</span>
+                        <span>C) **Eres**</span>
                     </label>
-
                     <label class="answer-option d-flex align-items-center">
                         <input type="radio" name="answer" value="d" class="form-check-input">
-                        <span>D) **Il est**</span>
+                        <span>D) **Somos**</span>
                     </label>
                 </form>
                 
@@ -148,10 +146,10 @@
 
                 <div class="d-flex justify-content-between">
                     <button id="prev-btn" class="btn btn-secondary px-4 py-2" disabled>
-                        <i class="fas fa-chevron-left me-2"></i> Précédent
+                        <i class="fas fa-chevron-left me-2"></i> Anterior
                     </button>
-                    <button id="next-btn" class="btn btn-primary px-4 py-2" style="background-color: var(--clr-primary); border-color: var(--clr-primary);">
-                        Suivant <i class="fas fa-chevron-right ms-2"></i>
+                    <button id="next-btn" class="btn btn-primary px-4 py-2" style="background-color: var(--clr-primary); border-color: var(--clr-primary); color: var(--clr-text);">
+                        Siguiente <i class="fas fa-chevron-right ms-2"></i>
                     </button>
                 </div>
             </div>
@@ -159,10 +157,10 @@
 
         <div class="col-lg-3">
             <div class="question-nav-sidebar text-center">
-                <h5 class="fw-bold mb-3"><i class="fas fa-list-ol me-2"></i> Progression</h5>
+                <h5 class="fw-bold mb-3"><i class="fas fa-list-ol me-2"></i> Progreso</h5>
                 
                 <div class="bg-light p-2 rounded mb-4">
-                    <p class="mb-0 fw-bold text-danger"><i class="fas fa-clock me-2"></i> Temps Restant: <span id="quiz-timer">19:50</span></p>
+                    <p class="mb-0 fw-bold text-danger"><i class="fas fa-clock me-2"></i> Tiempo Restante: <span id="quiz-timer">19:50</span></p>
                 </div>
 
                 <div class="d-flex flex-wrap justify-content-center">
@@ -181,7 +179,7 @@
                 <hr class="my-3">
                 
                 <button class="btn btn-danger w-100 mt-2 py-2">
-                    <i class="fas fa-check-circle me-2"></i> Terminer le Quiz
+                    <i class="fas fa-check-circle me-2"></i> Terminar Cuestionario
                 </button>
             </div>
         </div>
